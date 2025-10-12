@@ -57,27 +57,27 @@ const Footer = () => {
           </div>
           
           <div>
-            <h4 className="text-base font-semibold text-foreground mb-4">For Doctors</h4>
+            <h4 className="text-base font-semibold text-foreground mb-4">Emergency Resources</h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/doctors" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Doctor Portal
+                <Link to="/blood-donation" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Blood Donation
                 </Link>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Join Our Team
-                </a>
+                <Link to="/organ-donation" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Organ Donation
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Resources
-                </a>
+                <Link to="/emergency-resources" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Emergency Hotlines
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Support
-                </a>
+                <Link to="/hospitals" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Hospital Directory
+                </Link>
               </li>
             </ul>
           </div>

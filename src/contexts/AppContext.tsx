@@ -31,16 +31,73 @@ interface Appointment {
   contact: string;
 }
 
+interface BloodDonation {
+  id: string;
+  donorName: string;
+  bloodType: 'A+' | 'A-' | 'B+' | 'B-' | 'O+' | 'O-' | 'AB+' | 'AB-';
+  contact: string;
+  city: string;
+  lastDonationDate: string;
+  availableDate: string;
+  status: 'available' | 'donated' | 'scheduled';
+  unitsAvailable: number;
+}
+
+interface BloodRequest {
+  id: string;
+  patientName: string;
+  bloodType: string;
+  unitsNeeded: number;
+  hospitalId: string;
+  urgency: 'critical' | 'urgent' | 'moderate';
+  contact: string;
+  date: string;
+  status: 'pending' | 'fulfilled' | 'cancelled';
+}
+
+interface OrganDonation {
+  id: string;
+  donorName: string;
+  organType: 'Heart' | 'Kidney' | 'Liver' | 'Lungs' | 'Pancreas' | 'Cornea';
+  donorAge: number;
+  bloodType: string;
+  hospitalId: string;
+  contact: string;
+  registrationDate: string;
+  status: 'registered' | 'matched' | 'transplanted';
+  medicalHistory?: string;
+}
+
+interface OrganRequest {
+  id: string;
+  patientName: string;
+  organType: string;
+  bloodType: string;
+  hospitalId: string;
+  urgency: 'critical' | 'urgent' | 'moderate';
+  waitingSince: string;
+  contact: string;
+  status: 'waiting' | 'matched' | 'completed';
+}
+
 interface AppContextType {
   doctors: Doctor[];
   hospitals: Hospital[];
   appointments: Appointment[];
+  bloodDonations: BloodDonation[];
+  bloodRequests: BloodRequest[];
+  organDonations: OrganDonation[];
+  organRequests: OrganRequest[];
   currencySymbol: string;
   isLoggedIn: boolean;
   userType: 'patient' | 'doctor' | 'admin' | null;
   setIsLoggedIn: (value: boolean) => void;
   setUserType: (value: 'patient' | 'doctor' | 'admin' | null) => void;
   addAppointment: (appointment: Appointment) => void;
+  addBloodDonation: (donation: BloodDonation) => void;
+  addBloodRequest: (request: BloodRequest) => void;
+  addOrganDonation: (donation: OrganDonation) => void;
+  addOrganRequest: (request: OrganRequest) => void;
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -156,20 +213,111 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
     }
   ]);
 
+  const [bloodDonations, setBloodDonations] = useState<BloodDonation[]>([
+    {
+      id: '1',
+      donorName: 'Alex Johnson',
+      bloodType: 'O+',
+      contact: '+1234567890',
+      city: 'New York',
+      lastDonationDate: '2024-07-15',
+      availableDate: '2024-10-15',
+      status: 'available',
+      unitsAvailable: 1
+    },
+    {
+      id: '2',
+      donorName: 'Sarah Williams',
+      bloodType: 'A+',
+      contact: '+1234567891',
+      city: 'Los Angeles',
+      lastDonationDate: '2024-06-10',
+      availableDate: '2024-09-10',
+      status: 'available',
+      unitsAvailable: 1
+    }
+  ]);
+
+  const [bloodRequests, setBloodRequests] = useState<BloodRequest[]>([
+    {
+      id: '1',
+      patientName: 'Michael Brown',
+      bloodType: 'B+',
+      unitsNeeded: 2,
+      hospitalId: '1',
+      urgency: 'critical',
+      contact: '+1234567892',
+      date: '2024-10-12',
+      status: 'pending'
+    }
+  ]);
+
+  const [organDonations, setOrganDonations] = useState<OrganDonation[]>([
+    {
+      id: '1',
+      donorName: 'Anonymous Donor',
+      organType: 'Kidney',
+      donorAge: 35,
+      bloodType: 'O+',
+      hospitalId: '1',
+      contact: 'organ-coordinator@hospital.com',
+      registrationDate: '2024-08-20',
+      status: 'registered'
+    }
+  ]);
+
+  const [organRequests, setOrganRequests] = useState<OrganRequest[]>([
+    {
+      id: '1',
+      patientName: 'Robert Davis',
+      organType: 'Kidney',
+      bloodType: 'O+',
+      hospitalId: '2',
+      urgency: 'urgent',
+      waitingSince: '2024-01-15',
+      contact: '+1234567893',
+      status: 'waiting'
+    }
+  ]);
+
   const addAppointment = (appointment: Appointment) => {
     setAppointments(prev => [...prev, appointment]);
+  };
+
+  const addBloodDonation = (donation: BloodDonation) => {
+    setBloodDonations(prev => [...prev, donation]);
+  };
+
+  const addBloodRequest = (request: BloodRequest) => {
+    setBloodRequests(prev => [...prev, request]);
+  };
+
+  const addOrganDonation = (donation: OrganDonation) => {
+    setOrganDonations(prev => [...prev, donation]);
+  };
+
+  const addOrganRequest = (request: OrganRequest) => {
+    setOrganRequests(prev => [...prev, request]);
   };
 
   const value = {
     doctors,
     hospitals,
     appointments,
+    bloodDonations,
+    bloodRequests,
+    organDonations,
+    organRequests,
     currencySymbol,
     isLoggedIn,
     userType,
     setIsLoggedIn,
     setUserType,
-    addAppointment
+    addAppointment,
+    addBloodDonation,
+    addBloodRequest,
+    addOrganDonation,
+    addOrganRequest
   };
 
   return (

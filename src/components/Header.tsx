@@ -55,6 +55,22 @@ const Header = () => {
             >
               Patient Portal
             </Link>
+            <Link
+              to="/blood-donation"
+              className={`text-sm font-medium transition-colors duration-200 ${
+                isActive("/blood-donation") ? "text-primary" : "text-foreground hover:text-primary"
+              }`}
+            >
+              Blood Donation
+            </Link>
+            <Link
+              to="/organ-donation"
+              className={`text-sm font-medium transition-colors duration-200 ${
+                isActive("/organ-donation") ? "text-primary" : "text-foreground hover:text-primary"
+              }`}
+            >
+              Organ Donation
+            </Link>
             <Link to="/appointment">
               <Button variant="hero" size="sm">
                 Book Appointment
@@ -112,6 +128,24 @@ const Header = () => {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Patient Portal
+              </Link>
+              <Link
+                to="/blood-donation"
+                className={`text-sm font-medium px-2 py-1 rounded transition-colors ${
+                  isActive("/blood-donation") ? "text-primary bg-primary/10" : "text-foreground hover:text-primary"
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Blood Donation
+              </Link>
+              <Link
+                to="/organ-donation"
+                className={`text-sm font-medium px-2 py-1 rounded transition-colors ${
+                  isActive("/organ-donation") ? "text-primary bg-primary/10" : "text-foreground hover:text-primary"
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Organ Donation
               </Link>
               <Link to="/appointment" onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="hero" size="sm" className="w-full">

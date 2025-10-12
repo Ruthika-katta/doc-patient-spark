@@ -5,7 +5,7 @@ import TopDoctors from "@/components/TopDoctors";
 import Banner from "@/components/Banner";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Calendar, Activity, Shield, Clock } from "lucide-react";
+import { Calendar, Activity, Shield, Clock, Droplet, Heart } from "lucide-react";
 import heroImage from "@/assets/hero-doctor.jpg";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -30,6 +30,18 @@ const Index = () => {
       icon: Shield,
       title: "Prescription Management",
       description: "Digital prescription tracking and medication history",
+    },
+    {
+      icon: Droplet,
+      title: "Blood Donation",
+      description: "Connect donors and patients for life-saving blood transfusions",
+      link: "/blood-donation"
+    },
+    {
+      icon: Heart,
+      title: "Organ Donation",
+      description: "Coordinate organ transplants and save lives through donation",
+      link: "/organ-donation"
     },
   ];
 
@@ -113,21 +125,47 @@ const Index = () => {
               </p>
             </div>
             
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {features.map((feature, index) => (
-                <Card key={index} className="hover:shadow-medium transition-all">
-                  <CardHeader>
-                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                      <feature.icon className="w-6 h-6 text-primary" />
-                    </div>
-                    <CardTitle className="text-xl">{feature.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription>
-                      {feature.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
+                feature.link ? (
+                  <Link key={index} to={feature.link}>
+                    <Card className="hover:shadow-medium transition-all h-full">
+                      <CardHeader>
+                        <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${
+                          feature.title === "Blood Donation" ? "bg-red-100 dark:bg-red-950" :
+                          feature.title === "Organ Donation" ? "bg-pink-100 dark:bg-pink-950" :
+                          "bg-primary/10"
+                        }`}>
+                          <feature.icon className={`w-6 h-6 ${
+                            feature.title === "Blood Donation" ? "text-red-600" :
+                            feature.title === "Organ Donation" ? "text-pink-600" :
+                            "text-primary"
+                          }`} />
+                        </div>
+                        <CardTitle className="text-xl">{feature.title}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <CardDescription>
+                          {feature.description}
+                        </CardDescription>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ) : (
+                  <Card key={index} className="hover:shadow-medium transition-all h-full">
+                    <CardHeader>
+                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                        <feature.icon className="w-6 h-6 text-primary" />
+                      </div>
+                      <CardTitle className="text-xl">{feature.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <CardDescription>
+                        {feature.description}
+                      </CardDescription>
+                    </CardContent>
+                  </Card>
+                )
               ))}
             </div>
           </div>

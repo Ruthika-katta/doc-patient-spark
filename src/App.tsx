@@ -17,6 +17,9 @@ import AdminDashboard from "./pages/AdminDashboard";
 import HospitalList from "./pages/HospitalList";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
+import BloodDonation from "./pages/BloodDonation";
+import OrganDonation from "./pages/OrganDonation";
+import EmergencyResources from "./pages/EmergencyResources";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +45,9 @@ const App = () => (
             <Route path="/doctor-dashboard" element={<DoctorDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/hospitals" element={<HospitalList />} />
+            <Route path="/blood-donation" element={<BloodDonation />} />
+            <Route path="/organ-donation" element={<OrganDonation />} />
+            <Route path="/emergency-resources" element={<EmergencyResources />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
