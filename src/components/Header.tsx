@@ -56,6 +56,14 @@ const Header = () => {
               Patient Portal
             </Link>
             <Link
+              to="/laboratory"
+              className={`text-sm font-medium transition-colors duration-200 ${
+                isActive("/laboratory") ? "text-primary" : "text-foreground hover:text-primary"
+              }`}
+            >
+              Laboratory
+            </Link>
+            <Link
               to="/blood-donation"
               className={`text-sm font-medium transition-colors duration-200 ${
                 isActive("/blood-donation") ? "text-primary" : "text-foreground hover:text-primary"
@@ -128,6 +136,15 @@ const Header = () => {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Patient Portal
+              </Link>
+              <Link
+                to="/laboratory"
+                className={`text-sm font-medium px-2 py-1 rounded transition-colors ${
+                  isActive("/laboratory") ? "text-primary bg-primary/10" : "text-foreground hover:text-primary"
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Laboratory
               </Link>
               <Link
                 to="/blood-donation"

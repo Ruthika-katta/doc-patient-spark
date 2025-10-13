@@ -20,6 +20,8 @@ import About from "./pages/About";
 import BloodDonation from "./pages/BloodDonation";
 import OrganDonation from "./pages/OrganDonation";
 import EmergencyResources from "./pages/EmergencyResources";
+import Laboratory from "./pages/Laboratory";
+import DoctorRegistration from "./pages/DoctorRegistration";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -48,6 +50,8 @@ const App = () => (
             <Route path="/blood-donation" element={<BloodDonation />} />
             <Route path="/organ-donation" element={<OrganDonation />} />
             <Route path="/emergency-resources" element={<EmergencyResources />} />
+            <Route path="/laboratory" element={<Laboratory />} />
+            <Route path="/doctor-registration" element={<DoctorRegistration />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

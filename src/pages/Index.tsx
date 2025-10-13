@@ -5,7 +5,7 @@ import TopDoctors from "@/components/TopDoctors";
 import Banner from "@/components/Banner";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Calendar, Activity, Shield, Clock, Droplet, Heart } from "lucide-react";
+import { Calendar, Activity, Shield, Clock, Droplet, Heart, FlaskConical } from "lucide-react";
 import heroImage from "@/assets/hero-doctor.jpg";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -42,6 +42,12 @@ const Index = () => {
       title: "Organ Donation",
       description: "Coordinate organ transplants and save lives through donation",
       link: "/organ-donation"
+    },
+    {
+      icon: FlaskConical,
+      title: "Laboratory Services",
+      description: "Advanced diagnostic testing with quick and accurate results",
+      link: "/laboratory"
     },
   ];
 
@@ -134,11 +140,13 @@ const Index = () => {
                         <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${
                           feature.title === "Blood Donation" ? "bg-red-100 dark:bg-red-950" :
                           feature.title === "Organ Donation" ? "bg-pink-100 dark:bg-pink-950" :
+                          feature.title === "Laboratory Services" ? "bg-cyan-100 dark:bg-cyan-950" :
                           "bg-primary/10"
                         }`}>
                           <feature.icon className={`w-6 h-6 ${
                             feature.title === "Blood Donation" ? "text-red-600" :
                             feature.title === "Organ Donation" ? "text-pink-600" :
+                            feature.title === "Laboratory Services" ? "text-cyan-600" :
                             "text-primary"
                           }`} />
                         </div>
@@ -183,12 +191,12 @@ const Index = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link to="/patients">
-                  <Button variant="secondary" size="lg" className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto bg-white text-primary hover:bg-white/90">
                     Patient Portal
                   </Button>
                 </Link>
                 <Link to="/doctors">
-                  <Button variant="secondary" size="lg" className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto bg-white text-primary hover:bg-white/90">
                     Doctor Portal
                   </Button>
                 </Link>

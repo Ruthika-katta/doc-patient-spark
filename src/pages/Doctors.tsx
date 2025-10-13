@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Star, Calendar, Award, GraduationCap, Clock } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const Doctors = () => {
+  const [selectedSpecialty, setSelectedSpecialty] = useState("All Specialties");
+
   const doctors = [
     {
       name: "Dr. Sarah Johnson",
@@ -80,6 +83,14 @@ const Doctors = () => {
     "General Medicine",
   ];
 
+  // Filter doctors based on selected specialty
+  const filteredDoctors = selectedSpecialty === "All Specialties" 
+    ? doctors 
+    : doctors.filter(doctor => {
+        const specialtyMatch = selectedSpecialty.toLowerCase().replace(/logy|ian|ist/g, '');
+        return doctor.specialty.toLowerCase().includes(specialtyMatch);
+      });
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -106,13 +117,18 @@ const Doctors = () => {
               {specialties.map((specialty, index) => (
                 <Badge
                   key={index}
-                  variant={index === 0 ? "default" : "outline"}
+                  variant={selectedSpecialty === specialty ? "default" : "outline"}
                   className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors px-4 py-2"
+                  onClick={() => setSelectedSpecialty(specialty)}
                 >
                   {specialty}
                 </Badge>
               ))}
             </div>
+            <p className="text-center text-muted-foreground mt-4">
+              Showing {filteredDoctors.length} doctor{filteredDoctors.length !== 1 ? 's' : ''}
+              {selectedSpecialty !== "All Specialties" && ` in ${selectedSpecialty}`}
+            </p>
           </div>
         </section>
 
@@ -120,7 +136,7 @@ const Doctors = () => {
         <section className="py-16 md:py-24">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {doctors.map((doctor, index) => (
+              {filteredDoctors.map((doctor, index) => (
                 <Card key={index} className="border-border hover:shadow-medium transition-all duration-300 bg-gradient-card">
                   <CardHeader>
                     <div className="flex items-start justify-between mb-4">
@@ -183,9 +199,11 @@ const Doctors = () => {
               <p className="text-lg text-muted-foreground mb-8">
                 Join our team of healthcare professionals and make a difference in patients' lives
               </p>
-              <Button variant="hero" size="lg">
-                Join Our Team
-              </Button>
+              <Link to="/doctor-registration">
+                <Button variant="hero" size="lg">
+                  Join Our Team
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
