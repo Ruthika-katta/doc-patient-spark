@@ -79,7 +79,7 @@ const Header = () => {
             >
               Organ Donation
             </Link>
-            <Link to="/appointment">
+            <Link to="/appointment/new">
               <Button variant="hero" size="sm">
                 Book Appointment
               </Button>
@@ -164,7 +164,7 @@ const Header = () => {
               >
                 Organ Donation
               </Link>
-              <Link to="/appointment" onClick={() => setMobileMenuOpen(false)}>
+              <Link to="/appointment/new" onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="hero" size="sm" className="w-full">
                   Book Appointment
                 </Button>

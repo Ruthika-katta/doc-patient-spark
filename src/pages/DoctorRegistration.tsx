@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { UserPlus, Award, GraduationCap, Clock, FileText } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const DoctorRegistration = () => {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const DoctorRegistration = () => {
     "Radiology",
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Basic validation
@@ -53,16 +54,43 @@ const DoctorRegistration = () => {
       return;
     }
 
-    // Show success message
-    toast({
-      title: "Application Submitted Successfully!",
-      description: "Our team will review your application and contact you within 48 hours.",
-    });
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const { error } = await supabase.from('doctors').insert({
+        user_id: user?.id,
+        full_name: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        specialty: formData.specialty,
+        license_number: formData.licenseNumber,
+        years_experience: parseInt(formData.experience) || 0,
+        medical_school: formData.medicalSchool,
+        degrees: formData.degree,
+        bio: formData.bio,
+        availability: formData.availability,
+        status: 'pending'
+      });
 
-    // Navigate back to doctors page
-    setTimeout(() => {
-      navigate("/doctors");
-    }, 2000);
+      if (error) throw error;
+
+      // Show success message
+      toast({
+        title: "Application Submitted Successfully!",
+        description: "Our team will review your application and contact you within 48 hours.",
+      });
+
+      // Navigate back to doctors page
+      setTimeout(() => {
+        navigate("/doctors");
+      }, 2000);
+    } catch (error: any) {
+      toast({
+        title: "Submission Failed",
+        description: error.message || "Please try again later.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

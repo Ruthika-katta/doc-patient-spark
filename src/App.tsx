@@ -4,12 +4,15 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppContextProvider } from "./contexts/AppContext";
+import { AuthProvider } from "./contexts/AuthContext";
 import Index from "./pages/Index";
 import Services from "./pages/Services";
 import Doctors from "./pages/Doctors";
 import Patients from "./pages/Patients";
 import Appointment from "./pages/Appointment";
 import Login from "./pages/Login";
+import Auth from "./pages/Auth";
+import PatientDashboard from "./pages/PatientDashboard";
 import MyAppointments from "./pages/MyAppointments";
 import MyProfile from "./pages/MyProfile";
 import DoctorDashboard from "./pages/DoctorDashboard";
@@ -28,18 +31,22 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AppContextProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+    <AuthProvider>
+      <AppContextProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/services" element={<Services />} />
             <Route path="/doctors" element={<Doctors />} />
             <Route path="/patients" element={<Patients />} />
+            <Route path="/patient-dashboard" element={<PatientDashboard />} />
             <Route path="/appointment/:docId" element={<Appointment />} />
+            <Route path="/appointment/new" element={<Appointment />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/auth" element={<Auth />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/myappointments" element={<MyAppointments />} />
@@ -58,6 +65,7 @@ const App = () => (
         </BrowserRouter>
       </TooltipProvider>
     </AppContextProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

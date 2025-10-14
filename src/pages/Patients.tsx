@@ -73,12 +73,16 @@ const Patients = () => {
                 Manage your healthcare journey with our secure and convenient patient portal
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button variant="hero" size="lg">
-                  Login to Portal
-                </Button>
-                <Button variant="medical" size="lg">
-                  Create Account
-                </Button>
+                <Link to="/auth">
+                  <Button variant="hero" size="lg">
+                    Login to Portal
+                  </Button>
+                </Link>
+                <Link to="/auth">
+                  <Button variant="medical" size="lg">
+                    Create Account
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
@@ -218,10 +222,12 @@ const Patients = () => {
                 Create your patient portal account today and take control of your healthcare
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button variant="secondary" size="lg">
-                  Create Account
-                </Button>
-                <Link to="/appointment">
+                <Link to="/auth">
+                  <Button variant="secondary" size="lg">
+                    Create Account
+                  </Button>
+                </Link>
+                <Link to="/appointment/new">
                   <Button variant="medical" size="lg" className="bg-card/10 border-primary-foreground text-primary-foreground hover:bg-card/20">
                     Book First Appointment
                   </Button>
