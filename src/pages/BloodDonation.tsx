@@ -42,14 +42,12 @@ const BloodDonation = () => {
     e.preventDefault();
     const newDonor = {
       id: Date.now().toString(),
-      donorName: donorForm.donorName,
-      bloodType: donorForm.bloodType as 'A+' | 'A-' | 'B+' | 'B-' | 'O+' | 'O-' | 'AB+' | 'AB-',
-      contact: donorForm.contact,
+      name: donorForm.donorName,
+      bloodType: donorForm.bloodType,
+      phone: donorForm.contact,
       city: donorForm.city,
-      lastDonationDate: donorForm.lastDonationDate,
-      unitsAvailable: donorForm.unitsAvailable,
-      availableDate: new Date(new Date(donorForm.lastDonationDate).getTime() + 90 * 24 * 60 * 60 * 1000).toISOString(),
-      status: 'available' as const
+      availableDate: new Date(new Date(donorForm.lastDonationDate).getTime() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      unitsAvailable: donorForm.unitsAvailable
     };
     addBloodDonation(newDonor);
     toast({
@@ -70,9 +68,13 @@ const BloodDonation = () => {
     e.preventDefault();
     const newRequest = {
       id: Date.now().toString(),
-      ...requestForm,
-      date: new Date().toISOString(),
-      status: 'pending' as const
+      patientName: requestForm.patientName,
+      bloodType: requestForm.bloodType,
+      unitsNeeded: requestForm.unitsNeeded,
+      hospitalId: requestForm.hospitalId,
+      urgency: requestForm.urgency as 'critical' | 'urgent' | 'normal',
+      contact: requestForm.contact,
+      requiredBy: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
     };
     addBloodRequest(newRequest);
     toast({
@@ -84,7 +86,7 @@ const BloodDonation = () => {
       bloodType: '',
       unitsNeeded: 1,
       hospitalId: '',
-      urgency: 'moderate',
+      urgency: 'urgent',
       contact: ''
     });
   };
@@ -383,13 +385,12 @@ const BloodDonation = () => {
           <h2 className="text-3xl font-bold mb-6 text-red-600">Urgent Blood Requests</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {bloodRequests
-              .filter(req => req.status === 'pending')
               .sort((a, b) => {
-                const urgencyOrder = { critical: 0, urgent: 1, moderate: 2 };
+                const urgencyOrder = { critical: 0, urgent: 1, normal: 2 };
                 return urgencyOrder[a.urgency] - urgencyOrder[b.urgency];
               })
               .map(request => (
-                <RequestCard key={request.id} request={request} type="blood" />
+                <RequestCard key={request.id} request={{...request, status: 'active'}} type="blood" />
               ))}
           </div>
         </section>

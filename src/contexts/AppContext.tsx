@@ -1,4 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from './AuthContext';
 
 interface Doctor {
   id: string;
@@ -18,7 +20,9 @@ interface Hospital {
   address: string;
   email: string;
   phone: string;
+  services?: string[];
 }
+
 
 interface Appointment {
   id: string;
@@ -33,13 +37,11 @@ interface Appointment {
 
 interface BloodDonation {
   id: string;
-  donorName: string;
-  bloodType: 'A+' | 'A-' | 'B+' | 'B-' | 'O+' | 'O-' | 'AB+' | 'AB-';
-  contact: string;
+  name: string;
+  bloodType: string;
+  phone: string;
   city: string;
-  lastDonationDate: string;
   availableDate: string;
-  status: 'available' | 'donated' | 'scheduled';
   unitsAvailable: number;
 }
 
@@ -49,23 +51,19 @@ interface BloodRequest {
   bloodType: string;
   unitsNeeded: number;
   hospitalId: string;
-  urgency: 'critical' | 'urgent' | 'moderate';
+  urgency: 'critical' | 'urgent' | 'normal';
   contact: string;
-  date: string;
-  status: 'pending' | 'fulfilled' | 'cancelled';
+  requiredBy: string;
 }
 
 interface OrganDonation {
   id: string;
-  donorName: string;
-  organType: 'Heart' | 'Kidney' | 'Liver' | 'Lungs' | 'Pancreas' | 'Cornea';
-  donorAge: number;
+  name: string;
+  organType: string;
   bloodType: string;
-  hospitalId: string;
-  contact: string;
-  registrationDate: string;
-  status: 'registered' | 'matched' | 'transplanted';
-  medicalHistory?: string;
+  phone: string;
+  city: string;
+  age: number;
 }
 
 interface OrganRequest {
@@ -74,10 +72,9 @@ interface OrganRequest {
   organType: string;
   bloodType: string;
   hospitalId: string;
-  urgency: 'critical' | 'urgent' | 'moderate';
-  waitingSince: string;
+  urgency: 'critical' | 'urgent' | 'normal';
   contact: string;
-  status: 'waiting' | 'matched' | 'completed';
+  age: number;
 }
 
 interface AppContextType {
@@ -104,200 +101,277 @@ export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppContextProvider = ({ children }: { children: ReactNode }) => {
   const currencySymbol = "$";
+  const { user } = useAuth();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userType, setUserType] = useState<'patient' | 'doctor' | 'admin' | null>(null);
-  
-  const [doctors] = useState<Doctor[]>([
-    {
-      id: '1',
-      name: 'Dr. Sarah Johnson',
-      image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400',
-      speciality: 'Cardiology',
-      degree: 'MBBS, MD',
-      experience: '12',
-      about: 'Expert in cardiovascular diseases with extensive experience in cardiac care.',
-      fees: 150,
-      address: 'Main Hospital, Floor 3'
-    },
-    {
-      id: '2',
-      name: 'Dr. Michael Chen',
-      image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400',
-      speciality: 'Neurology',
-      degree: 'MBBS, DM',
-      experience: '15',
-      about: 'Specialized in neurological disorders and brain health.',
-      fees: 180,
-      address: 'Neuro Center, Floor 2'
-    },
-    {
-      id: '3',
-      name: 'Dr. Emily Davis',
-      image: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400',
-      speciality: 'Pediatrics',
-      degree: 'MBBS, DCH',
-      experience: '10',
-      about: 'Passionate about children\'s health and development.',
-      fees: 120,
-      address: 'Children\'s Wing, Floor 1'
-    },
-    {
-      id: '4',
-      name: 'Dr. James Wilson',
-      image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400',
-      speciality: 'Orthopedics',
-      degree: 'MBBS, MS',
-      experience: '18',
-      about: 'Specialist in bone and joint surgeries.',
-      fees: 200,
-      address: 'Orthopedic Center, Floor 4'
-    },
-    {
-      id: '5',
-      name: 'Dr. Priya Sharma',
-      image: 'https://images.unsplash.com/photo-1638202993928-7267aad84c31?w=400',
-      speciality: 'Dermatology',
-      degree: 'MBBS, MD',
-      experience: '8',
-      about: 'Expert in skin care and cosmetic dermatology.',
-      fees: 130,
-      address: 'Skin Clinic, Floor 2'
-    },
-    {
-      id: '6',
-      name: 'Dr. Robert Brown',
-      image: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=400',
-      speciality: 'General Medicine',
-      degree: 'MBBS',
-      experience: '20',
-      about: 'General physician with extensive experience.',
-      fees: 100,
-      address: 'General OPD, Ground Floor'
-    }
-  ]);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [hospitals, setHospitals] = useState<Hospital[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [bloodDonations, setBloodDonations] = useState<BloodDonation[]>([]);
+  const [bloodRequests, setBloodRequests] = useState<BloodRequest[]>([]);
+  const [organDonations, setOrganDonations] = useState<OrganDonation[]>([]);
+  const [organRequests, setOrganRequests] = useState<OrganRequest[]>([]);
 
-  const [hospitals] = useState<Hospital[]>([
-    {
-      id: '1',
-      name: 'Square Hospital',
-      address: 'Panthapath, Dhaka',
-      email: 'square@hospital.com',
-      phone: '+880-123-456789'
-    },
-    {
-      id: '2',
-      name: 'United Hospital',
-      address: 'Gulshan, Dhaka',
-      email: 'united@hospital.com',
-      phone: '+880-987-654321'
-    },
-    {
-      id: '3',
-      name: 'Apollo Hospital',
-      address: 'Bashundhara, Dhaka',
-      email: 'apollo@hospital.com',
-      phone: '+880-555-123456'
+  // Update login status based on auth user
+  useEffect(() => {
+    if (user) {
+      setIsLoggedIn(true);
+      // Fetch user role
+      const fetchUserRole = async () => {
+        const { data } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        
+        if (data) {
+          setUserType(data.role as 'patient' | 'doctor' | 'admin');
+        } else {
+          setUserType('patient');
+        }
+      };
+      fetchUserRole();
+    } else {
+      setIsLoggedIn(false);
+      setUserType(null);
     }
-  ]);
+  }, [user]);
 
-  const [appointments, setAppointments] = useState<Appointment[]>([
-    {
-      id: '1',
-      doctorId: '1',
-      patientName: 'John Doe',
-      date: '2024-10-15',
-      time: '10:00 AM',
-      status: 'confirmed',
-      purpose: 'Regular Checkup',
-      contact: '+1234567890'
+  // Fetch doctors from Supabase
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      const { data, error } = await supabase
+        .from('doctors')
+        .select('*')
+        .eq('status', 'approved');
+      
+      if (!error && data) {
+        setDoctors(data.map(doc => ({
+          id: doc.id,
+          name: doc.full_name,
+          specialty: doc.specialty,
+          speciality: doc.specialty,
+          degree: doc.degrees || 'MBBS',
+          experience: `${doc.years_experience}`,
+          about: doc.bio || '',
+          fees: 50,
+          address: '',
+          image: doc.image_url || 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&h=400&fit=crop'
+        })));
+      }
+    };
+    fetchDoctors();
+  }, []);
+
+  // Fetch hospitals from Supabase
+  useEffect(() => {
+    const fetchHospitals = async () => {
+      const { data, error } = await supabase
+        .from('hospitals')
+        .select('*');
+      
+      if (!error && data) {
+        setHospitals(data.map(h => ({
+          id: h.id,
+          name: h.name,
+          address: h.address,
+          phone: h.phone,
+          email: h.email,
+          services: h.services || []
+        })));
+      }
+    };
+    fetchHospitals();
+  }, []);
+
+  // Fetch blood donations
+  useEffect(() => {
+    const fetchBloodDonations = async () => {
+      const { data, error } = await supabase
+        .from('blood_donations')
+        .select('*')
+        .eq('status', 'available');
+      
+      if (!error && data) {
+        setBloodDonations(data.map(bd => ({
+          id: bd.id,
+          name: bd.donor_name,
+          bloodType: bd.blood_type,
+          phone: bd.phone,
+          city: bd.city,
+          availableDate: bd.available_date,
+          unitsAvailable: bd.units_available
+        })));
+      }
+    };
+    fetchBloodDonations();
+  }, []);
+
+  // Fetch blood requests
+  useEffect(() => {
+    const fetchBloodRequests = async () => {
+      const { data, error } = await supabase
+        .from('blood_requests')
+        .select('*')
+        .eq('status', 'active');
+      
+      if (!error && data) {
+        setBloodRequests(data.map(br => ({
+          id: br.id,
+          patientName: br.patient_name,
+          bloodType: br.blood_type,
+          unitsNeeded: br.units_needed,
+          hospitalId: br.hospital_id || '',
+          urgency: br.urgency as 'critical' | 'urgent' | 'normal',
+          contact: br.contact,
+          requiredBy: br.required_by
+        })));
+      }
+    };
+    fetchBloodRequests();
+  }, []);
+
+  // Fetch organ donations
+  useEffect(() => {
+    const fetchOrganDonations = async () => {
+      const { data, error } = await supabase
+        .from('organ_donations')
+        .select('*')
+        .eq('status', 'registered');
+      
+      if (!error && data) {
+        setOrganDonations(data.map(od => ({
+          id: od.id,
+          name: od.donor_name,
+          organType: od.organ_type,
+          bloodType: od.blood_type,
+          phone: od.phone,
+          city: od.city,
+          age: od.age
+        })));
+      }
+    };
+    fetchOrganDonations();
+  }, []);
+
+  // Fetch organ requests
+  useEffect(() => {
+    const fetchOrganRequests = async () => {
+      const { data, error } = await supabase
+        .from('organ_requests')
+        .select('*')
+        .eq('status', 'active');
+      
+      if (!error && data) {
+        setOrganRequests(data.map(or => ({
+          id: or.id,
+          patientName: or.patient_name,
+          organType: or.organ_type,
+          bloodType: or.blood_type,
+          hospitalId: or.hospital_id || '',
+          urgency: or.urgency as 'critical' | 'urgent' | 'normal',
+          contact: or.contact,
+          age: or.age
+        })));
+      }
+    };
+    fetchOrganRequests();
+  }, []);
+
+  const addAppointment = async (appointment: Appointment) => {
+    const { data, error } = await supabase
+      .from('appointments')
+      .insert([{
+        patient_id: appointment.doctorId, // Will be updated
+        doctor_id: appointment.doctorId,
+        appointment_date: appointment.date,
+        appointment_time: appointment.time,
+        purpose: appointment.purpose,
+        notes: '',
+        status: appointment.status
+      }])
+      .select()
+      .single();
+    
+    if (!error && data) {
+      setAppointments(prev => [...prev, appointment]);
     }
-  ]);
-
-  const [bloodDonations, setBloodDonations] = useState<BloodDonation[]>([
-    {
-      id: '1',
-      donorName: 'Alex Johnson',
-      bloodType: 'O+',
-      contact: '+1234567890',
-      city: 'New York',
-      lastDonationDate: '2024-07-15',
-      availableDate: '2024-10-15',
-      status: 'available',
-      unitsAvailable: 1
-    },
-    {
-      id: '2',
-      donorName: 'Sarah Williams',
-      bloodType: 'A+',
-      contact: '+1234567891',
-      city: 'Los Angeles',
-      lastDonationDate: '2024-06-10',
-      availableDate: '2024-09-10',
-      status: 'available',
-      unitsAvailable: 1
-    }
-  ]);
-
-  const [bloodRequests, setBloodRequests] = useState<BloodRequest[]>([
-    {
-      id: '1',
-      patientName: 'Michael Brown',
-      bloodType: 'B+',
-      unitsNeeded: 2,
-      hospitalId: '1',
-      urgency: 'critical',
-      contact: '+1234567892',
-      date: '2024-10-12',
-      status: 'pending'
-    }
-  ]);
-
-  const [organDonations, setOrganDonations] = useState<OrganDonation[]>([
-    {
-      id: '1',
-      donorName: 'Anonymous Donor',
-      organType: 'Kidney',
-      donorAge: 35,
-      bloodType: 'O+',
-      hospitalId: '1',
-      contact: 'organ-coordinator@hospital.com',
-      registrationDate: '2024-08-20',
-      status: 'registered'
-    }
-  ]);
-
-  const [organRequests, setOrganRequests] = useState<OrganRequest[]>([
-    {
-      id: '1',
-      patientName: 'Robert Davis',
-      organType: 'Kidney',
-      bloodType: 'O+',
-      hospitalId: '2',
-      urgency: 'urgent',
-      waitingSince: '2024-01-15',
-      contact: '+1234567893',
-      status: 'waiting'
-    }
-  ]);
-
-  const addAppointment = (appointment: Appointment) => {
-    setAppointments(prev => [...prev, appointment]);
   };
 
-  const addBloodDonation = (donation: BloodDonation) => {
-    setBloodDonations(prev => [...prev, donation]);
+  const addBloodDonation = async (donation: BloodDonation) => {
+    if (!user) return;
+    
+    const { error } = await supabase
+      .from('blood_donations')
+      .insert([{
+        donor_id: user.id,
+        donor_name: donation.name,
+        blood_type: donation.bloodType,
+        phone: donation.phone,
+        city: donation.city,
+        available_date: donation.availableDate,
+        units_available: donation.unitsAvailable
+      }]);
+    
+    if (!error) {
+      setBloodDonations(prev => [...prev, donation]);
+    }
   };
 
-  const addBloodRequest = (request: BloodRequest) => {
-    setBloodRequests(prev => [...prev, request]);
+  const addBloodRequest = async (request: BloodRequest) => {
+    const { error } = await supabase
+      .from('blood_requests')
+      .insert([{
+        patient_name: request.patientName,
+        blood_type: request.bloodType,
+        units_needed: request.unitsNeeded,
+        hospital_id: request.hospitalId || null,
+        urgency: request.urgency,
+        contact: request.contact,
+        required_by: request.requiredBy
+      }]);
+    
+    if (!error) {
+      setBloodRequests(prev => [...prev, request]);
+    }
   };
 
-  const addOrganDonation = (donation: OrganDonation) => {
-    setOrganDonations(prev => [...prev, donation]);
+  const addOrganDonation = async (donation: OrganDonation) => {
+    if (!user) return;
+    
+    const { error } = await supabase
+      .from('organ_donations')
+      .insert([{
+        donor_id: user.id,
+        donor_name: donation.name,
+        organ_type: donation.organType,
+        blood_type: donation.bloodType,
+        phone: donation.phone,
+        city: donation.city,
+        age: donation.age
+      }]);
+    
+    if (!error) {
+      setOrganDonations(prev => [...prev, donation]);
+    }
   };
 
-  const addOrganRequest = (request: OrganRequest) => {
-    setOrganRequests(prev => [...prev, request]);
+  const addOrganRequest = async (request: OrganRequest) => {
+    const { error } = await supabase
+      .from('organ_requests')
+      .insert([{
+        patient_name: request.patientName,
+        organ_type: request.organType,
+        blood_type: request.bloodType,
+        hospital_id: request.hospitalId || null,
+        urgency: request.urgency,
+        contact: request.contact,
+        age: request.age
+      }]);
+    
+    if (!error) {
+      setOrganRequests(prev => [...prev, request]);
+    }
   };
 
   const value = {

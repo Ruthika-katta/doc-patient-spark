@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { AlertCircle } from "lucide-react";
 
 interface UrgencyBadgeProps {
-  urgency: 'critical' | 'urgent' | 'moderate';
+  urgency: 'critical' | 'urgent' | 'normal';
   className?: string;
 }
 
@@ -10,7 +10,7 @@ const UrgencyBadge = ({ urgency, className }: UrgencyBadgeProps) => {
   const variants = {
     critical: "bg-red-100 text-red-700 border-red-300 animate-pulse",
     urgent: "bg-orange-100 text-orange-700 border-orange-300",
-    moderate: "bg-yellow-100 text-yellow-700 border-yellow-300"
+    normal: "bg-yellow-100 text-yellow-700 border-yellow-300"
   };
 
   return (

@@ -13,10 +13,12 @@ interface RequestCardProps {
     organType?: string;
     unitsNeeded?: number;
     hospitalId: string;
-    urgency: 'critical' | 'urgent' | 'moderate';
+    urgency: 'critical' | 'urgent' | 'normal';
     contact: string;
     date?: string;
     waitingSince?: string;
+    requiredBy?: string;
+    age?: number;
     status: string;
   };
   type: 'blood' | 'organ';

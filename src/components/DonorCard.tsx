@@ -6,13 +6,11 @@ import { useState } from "react";
 interface DonorCardProps {
   donor: {
     id: string;
-    donorName: string;
+    name: string;
     bloodType: string;
     city: string;
-    lastDonationDate: string;
     availableDate: string;
-    contact: string;
-    status: string;
+    phone: string;
     unitsAvailable: number;
   };
 }
@@ -28,7 +26,7 @@ const DonorCard = ({ donor }: DonorCardProps) => {
             <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
               <Droplet className="w-5 h-5 text-red-600" />
             </div>
-            {donor.donorName}
+            {donor.name}
           </span>
           <span className="text-2xl font-bold text-red-600">{donor.bloodType}</span>
         </CardTitle>
@@ -49,7 +47,7 @@ const DonorCard = ({ donor }: DonorCardProps) => {
         {showContact ? (
           <div className="flex items-center gap-2 text-sm font-semibold text-primary">
             <Phone className="w-4 h-4" />
-            {donor.contact}
+            {donor.phone}
           </div>
         ) : (
           <Button 

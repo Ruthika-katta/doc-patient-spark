@@ -33,23 +33,21 @@ const OrganDonation = () => {
     organType: '',
     bloodType: '',
     hospitalId: '',
-    urgency: 'moderate' as 'critical' | 'urgent' | 'moderate',
-    contact: ''
+    urgency: 'normal' as 'critical' | 'urgent' | 'normal',
+    contact: '',
+    patientAge: ''
   });
 
   const handleDonorSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newDonor = {
       id: Date.now().toString(),
-      donorName: donorForm.donorName,
-      organType: donorForm.organType as any,
-      donorAge: parseInt(donorForm.donorAge),
+      name: donorForm.donorName,
+      organType: donorForm.organType,
+      age: parseInt(donorForm.donorAge),
       bloodType: donorForm.bloodType,
-      hospitalId: donorForm.hospitalId,
-      contact: donorForm.contact,
-      registrationDate: new Date().toISOString(),
-      status: 'registered' as const,
-      medicalHistory: donorForm.medicalHistory
+      phone: donorForm.contact,
+      city: '',
     };
     addOrganDonation(newDonor);
     toast({
@@ -71,9 +69,13 @@ const OrganDonation = () => {
     e.preventDefault();
     const newRequest = {
       id: Date.now().toString(),
-      ...requestForm,
-      waitingSince: new Date().toISOString(),
-      status: 'waiting' as const
+      patientName: requestForm.patientName,
+      organType: requestForm.organType,
+      bloodType: requestForm.bloodType,
+      hospitalId: requestForm.hospitalId,
+      urgency: requestForm.urgency as 'critical' | 'urgent' | 'normal',
+      contact: requestForm.contact,
+      age: parseInt(requestForm.patientAge || '0')
     };
     addOrganRequest(newRequest);
     toast({
@@ -82,10 +84,11 @@ const OrganDonation = () => {
     });
     setRequestForm({
       patientName: '',
+      patientAge: '',
       organType: '',
       bloodType: '',
       hospitalId: '',
-      urgency: 'moderate',
+      urgency: 'normal',
       contact: ''
     });
   };
@@ -419,13 +422,12 @@ const OrganDonation = () => {
           <h2 className="text-3xl font-bold mb-6 text-pink-600">Active Transplant Requests</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {organRequests
-              .filter(req => req.status === 'waiting')
               .sort((a, b) => {
-                const urgencyOrder = { critical: 0, urgent: 1, moderate: 2 };
+                const urgencyOrder = { critical: 0, urgent: 1, normal: 2 };
                 return urgencyOrder[a.urgency] - urgencyOrder[b.urgency];
               })
               .map(request => (
-                <RequestCard key={request.id} request={request} type="organ" />
+                <RequestCard key={request.id} request={{...request, status: 'active'}} type="organ" />
               ))}
           </div>
         </section>

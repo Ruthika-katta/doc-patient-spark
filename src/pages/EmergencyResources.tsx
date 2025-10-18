@@ -10,8 +10,8 @@ import RequestCard from "@/components/RequestCard";
 const EmergencyResources = () => {
   const { bloodRequests, organRequests, hospitals } = useAppContext();
   
-  const criticalBloodRequests = bloodRequests.filter(req => req.urgency === 'critical' && req.status === 'pending');
-  const criticalOrganRequests = organRequests.filter(req => req.urgency === 'critical' && req.status === 'waiting');
+  const criticalBloodRequests = bloodRequests.filter(req => req.urgency === 'critical');
+  const criticalOrganRequests = organRequests.filter(req => req.urgency === 'critical');
 
   return (
     <div className="min-h-screen bg-background">
@@ -143,8 +143,8 @@ const EmergencyResources = () => {
                   Critical Blood Requests
                 </h3>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {criticalBloodRequests.map(request => (
-                    <RequestCard key={request.id} request={request} type="blood" />
+            {criticalBloodRequests.map(request => (
+              <RequestCard key={request.id} request={{...request, status: 'active'}} type="blood" />
                   ))}
                 </div>
               </div>
@@ -157,8 +157,8 @@ const EmergencyResources = () => {
                   Critical Organ Requests
                 </h3>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {criticalOrganRequests.map(request => (
-                    <RequestCard key={request.id} request={request} type="organ" />
+            {criticalOrganRequests.map(request => (
+              <RequestCard key={request.id} request={{...request, status: 'active'}} type="organ" />
                   ))}
                 </div>
               </div>
