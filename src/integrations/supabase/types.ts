@@ -64,6 +64,95 @@ export type Database = {
           },
         ]
       }
+      blood_donations: {
+        Row: {
+          available_date: string
+          blood_type: string
+          city: string
+          created_at: string | null
+          donor_id: string
+          donor_name: string
+          id: string
+          phone: string
+          status: string | null
+          units_available: number
+        }
+        Insert: {
+          available_date: string
+          blood_type: string
+          city: string
+          created_at?: string | null
+          donor_id: string
+          donor_name: string
+          id?: string
+          phone: string
+          status?: string | null
+          units_available: number
+        }
+        Update: {
+          available_date?: string
+          blood_type?: string
+          city?: string
+          created_at?: string | null
+          donor_id?: string
+          donor_name?: string
+          id?: string
+          phone?: string
+          status?: string | null
+          units_available?: number
+        }
+        Relationships: []
+      }
+      blood_requests: {
+        Row: {
+          blood_type: string
+          contact: string
+          created_at: string | null
+          hospital_id: string | null
+          id: string
+          patient_name: string
+          required_by: string
+          status: string | null
+          units_needed: number
+          updated_at: string | null
+          urgency: string
+        }
+        Insert: {
+          blood_type: string
+          contact: string
+          created_at?: string | null
+          hospital_id?: string | null
+          id?: string
+          patient_name: string
+          required_by: string
+          status?: string | null
+          units_needed: number
+          updated_at?: string | null
+          urgency: string
+        }
+        Update: {
+          blood_type?: string
+          contact?: string
+          created_at?: string | null
+          hospital_id?: string | null
+          id?: string
+          patient_name?: string
+          required_by?: string
+          status?: string | null
+          units_needed?: number
+          updated_at?: string | null
+          urgency?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blood_requests_hospital_id_fkey"
+            columns: ["hospital_id"]
+            isOneToOne: false
+            referencedRelation: "hospitals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctors: {
         Row: {
           availability: string | null
@@ -72,6 +161,7 @@ export type Database = {
           degrees: string | null
           email: string
           full_name: string
+          hospital_id: string | null
           id: string
           image_url: string | null
           license_number: string
@@ -90,6 +180,7 @@ export type Database = {
           degrees?: string | null
           email: string
           full_name: string
+          hospital_id?: string | null
           id?: string
           image_url?: string | null
           license_number: string
@@ -108,6 +199,7 @@ export type Database = {
           degrees?: string | null
           email?: string
           full_name?: string
+          hospital_id?: string | null
           id?: string
           image_url?: string | null
           license_number?: string
@@ -119,7 +211,15 @@ export type Database = {
           user_id?: string | null
           years_experience?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "doctors_hospital_id_fkey"
+            columns: ["hospital_id"]
+            isOneToOne: false
+            referencedRelation: "hospitals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       documents: {
         Row: {
@@ -178,6 +278,45 @@ export type Database = {
           patient_id?: string
           recorded_at?: string | null
           unit?: string
+        }
+        Relationships: []
+      }
+      hospitals: {
+        Row: {
+          address: string
+          city: string
+          created_at: string | null
+          email: string
+          emergency_available: boolean | null
+          id: string
+          name: string
+          phone: string
+          services: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          address: string
+          city: string
+          created_at?: string | null
+          email: string
+          emergency_available?: boolean | null
+          id?: string
+          name: string
+          phone: string
+          services?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string
+          city?: string
+          created_at?: string | null
+          email?: string
+          emergency_available?: boolean | null
+          id?: string
+          name?: string
+          phone?: string
+          services?: string[] | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -254,6 +393,98 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      organ_donations: {
+        Row: {
+          age: number
+          blood_type: string
+          city: string
+          created_at: string | null
+          donor_id: string
+          donor_name: string
+          id: string
+          organ_type: string
+          phone: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          age: number
+          blood_type: string
+          city: string
+          created_at?: string | null
+          donor_id: string
+          donor_name: string
+          id?: string
+          organ_type: string
+          phone: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          age?: number
+          blood_type?: string
+          city?: string
+          created_at?: string | null
+          donor_id?: string
+          donor_name?: string
+          id?: string
+          organ_type?: string
+          phone?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      organ_requests: {
+        Row: {
+          age: number
+          blood_type: string
+          contact: string
+          created_at: string | null
+          hospital_id: string | null
+          id: string
+          organ_type: string
+          patient_name: string
+          status: string | null
+          updated_at: string | null
+          urgency: string
+        }
+        Insert: {
+          age: number
+          blood_type: string
+          contact: string
+          created_at?: string | null
+          hospital_id?: string | null
+          id?: string
+          organ_type: string
+          patient_name: string
+          status?: string | null
+          updated_at?: string | null
+          urgency: string
+        }
+        Update: {
+          age?: number
+          blood_type?: string
+          contact?: string
+          created_at?: string | null
+          hospital_id?: string | null
+          id?: string
+          organ_type?: string
+          patient_name?: string
+          status?: string | null
+          updated_at?: string | null
+          urgency?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organ_requests_hospital_id_fkey"
+            columns: ["hospital_id"]
+            isOneToOne: false
+            referencedRelation: "hospitals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       prescriptions: {
         Row: {
@@ -386,15 +617,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "doctor" | "patient"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -521,6 +779,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "doctor", "patient"],
+    },
   },
 } as const
